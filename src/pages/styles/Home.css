@@ -1,0 +1,135 @@
+.home {
+    font-family: Arial, sans-serif;
+    padding: 0 2rem;
+    margin-bottom: 2rem; /* Ensure margin-bottom to avoid footer overlap */
+}
+
+/* Latest Offers */
+.latest-offers {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.latest-offers img {
+    width: 100%;
+    height: 800px;
+    object-fit: cover;
+    transition: transform 0.5s ease-in-out;
+}
+
+.latest-offers .prev,
+.latest-offers .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.latest-offers .prev {
+    left: 0;
+}
+
+.latest-offers .next {
+    right: 0;
+}
+
+/* Best Deals */
+.best-deals {
+    margin-bottom: 2rem;
+}
+
+.best-deals h2 {
+    margin-bottom: 1rem;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.product {
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.product img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product h3 {
+    margin: 0.5rem 0;
+}
+
+.product p {
+    color: green;
+    font-weight: bold;
+}
+
+/* Featured Brands */
+.featured-brands {
+    margin-bottom: 2rem;
+}
+
+.featured-brands h2 {
+    margin-bottom: 1rem;
+}
+
+.brand-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.brand {
+    width: 150px;
+    text-align: center;
+}
+
+.brand img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Shoes Section */
+.shoes-section {
+    margin-bottom: 2rem;
+}
+
+.shoes-section h2 {
+    margin-bottom: 1rem;
+}
+
+.product-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+}
+
+.product-actions button {
+    padding: 0.5rem 1rem;
+    background-color: #2874f0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.product-actions button:hover {
+    background-color: #0056b3;
+}
