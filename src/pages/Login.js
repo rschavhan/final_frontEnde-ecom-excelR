@@ -2,7 +2,7 @@
 import React, { useState, useContext } from 'react';
 import api from '../services/api';
 import { AppContext } from '../context/AppContext';
-import './styles/Login.css'; // Ensure this path is correct
+import '../styles/Login.css'; // Ensure this path is correct
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
