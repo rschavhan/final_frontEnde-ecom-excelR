@@ -22,7 +22,14 @@ const Cart = () => {
             }
 
             // Update quantity in backend using api instance
+            /*
             await api.put(`/cart/${id}`, { quantity });
+            */
+            
+            await api.put(`/cart/${id}`, null, {
+                params: { quantity },
+                withCredentials: true // Include credentials if needed
+            });
 
             // Update local cart state
             setLocalCart(prevCart =>

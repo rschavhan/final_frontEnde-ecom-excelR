@@ -1,40 +1,39 @@
-  // src/components/Header.js
-  import React, { useContext } from 'react';
-  import { Link } from 'react-router-dom';
-  import { AppContext } from '../context/AppContext';
-  import '../styles/Header.css'; // Import the CSS file for styling
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import '../styles/Header.css'; // Import the CSS file for styling
 
-  const Header = () => {
-    const { user, logout, cart } = useContext(AppContext);
+const Header = () => {
+  const { userId, logout, cart } = useContext(AppContext);
 
-    return (
-      <header className="header">
-        <nav className="nav">
-          <div className="logo-container">
-            <Link to="/">
-              <img src="logo.png " alt="Logo" className="logo" />
-            </Link>
-            <span className="site-name">ShopEzy</span>
-          </div>
-          <div className="nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/products">Products</Link>
+  return (
+    <header className="header">
+      <nav className="nav">
+        <div className="logo-container">
+          <Link to="/">
+            <img src="logo.png" alt="Logo" className="logo" />
+          </Link>
+          <span className="site-name">ShopEzy</span>
+        </div>
+        <div className="nav-links">
+          <Link to="/">Home</Link>
+          <Link to="/products">Products</Link>
+          {userId ? (
+            <>
             <Link to="/cart">Cart ({cart.length})</Link>
-            {user ? (
-              <>
-                <span className='username'>Welcome, {user.username}</span>
-                <button onClick={logout}>Logout</button>
-              </>
-            ) : (
-              <>
-                <Link to="/login">Login</Link>
-                <Link to="/register">Register</Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
-    );
-  };
+              <span className='username'>Welcome, User</span>
+              <button onClick={logout}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
+            </>
+          )}
+        </div>
+      </nav>
+    </header>
+  );
+};
 
-  export default Header;
+export default Header; // Ensure default export

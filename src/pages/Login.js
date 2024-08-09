@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React, { useState, useContext } from 'react';
 import api from '../services/api';
 import { AppContext } from '../context/AppContext';
@@ -7,21 +6,22 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
-    const { login } = useContext(AppContext);
+    const { login, fetchCart } = useContext(AppContext);
     const navigate = useNavigate(); // Initialize useNavigate here
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await api.post('/auth/login', formData);
-            login(response.data);
-            console.log('Login successful:', response.data);
+            const { userId } = response.data; // Extract userId from response
+            login(userId);
+            fetchCart(); // Fetch cart data using the userId stored in context
             
-            // Use navigate to redirect to home
+            console.log('Login successful:', response.data);
             navigate('/'); // Adjust the path as necessary
             
         } catch (error) {
@@ -37,7 +37,7 @@ const Login = () => {
                 <input
                     type="email"
                     name="email"
-                    placeholder="Email" // Placeholder text
+                    placeholder="Email"
                     onChange={handleChange}
                     required
                 />
