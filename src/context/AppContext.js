@@ -1,12 +1,20 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import api from '../services/api';
+
 
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutMessage, setLogoutMessage] = useState('');
+  
+  const [searchQuery, setSearchQuery] = useState('');
+
+
 
   useEffect(() => {
     // Fetch user information from your backend or local storage
@@ -77,8 +85,32 @@ export const AppProvider = ({ children }) => {
     toast.success('Login successful!');
   };
 
+  const logout = async () => {
+    setIsLoggingOut(true);
+    setLogoutMessage(''); // Clear previous message
+    try {
+      await api.post('/auth/logout');
+      setUser(null);
+      setCart([]);
+      setLogoutMessage('Logged out successfully!');
+      toast.success('Logged out successfully!');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      setLogoutMessage('Error logging out. Please try again.');
+      toast.error('Error logging out');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const updateSearchQuery = (query) => {
+    setSearchQuery(query);
+  };
+
+ 
+
   return (
-    <AppContext.Provider value={{ cart, addToCart, removeFromCart, user, login }}>
+    <AppContext.Provider value={{ cart, addToCart, removeFromCart, user, login, isLoggingOut,logout,logoutMessage, searchQuery, updateSearchQuery}}>
       {children}
     </AppContext.Provider>
   );
