@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import '../styles/Header.css'; // Import the CSS file for styling
+//import { AppProvider, AppContext } from './context/AppContext';
 
 const Header = () => {
-  const { userId, logout, cart } = useContext(AppContext);
+  const { userName,userId, logout, cart } = useContext(AppContext);
 
   return (
     <header className="header">
@@ -21,7 +22,7 @@ const Header = () => {
           {userId ? (
             <>
             <Link to="/cart">Cart ({cart.length})</Link>
-              <span className='username'>Welcome, User</span>
+              <span className='username'>Welcome, {userName}</span>
               <button onClick={logout}>Logout</button>
             </>
           ) : (

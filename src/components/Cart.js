@@ -5,9 +5,11 @@ import { toast } from 'react-toastify';
 import './Cart.css';
 
 const Cart = () => {
-    const { cart, removeFromCart } = useContext(AppContext);
+    const { userId,cart, removeFromCart } = useContext(AppContext);
     const [localCart, setLocalCart] = useState(cart);
     const [feedbackMessage, setFeedbackMessage] = useState('');
+    
+
 
     useEffect(() => {
         setLocalCart(cart); // Sync local state with context state
@@ -20,17 +22,18 @@ const Cart = () => {
                 setFeedbackMessage('Quantity must be at least 1.');
                 return;
             }
+    
+            // Fetch the current cart state (if necessary)
+            // You might not need this GET request unless you have a specific reason
+             const response = await api.get(`/cart/${userId}`, { withCredentials: true });
+             const cartItems = response.data;
+             console.log("Fetch The Cart from DB",cartItems);
+    
+            // Update quantity in backend
+            console.log("id:",id);
 
-            // Update quantity in backend using api instance
-            /*
-            await api.put(`/cart/${id}`, { quantity });
-            */
-            
-            await api.put(`/cart/${id}`, null, {
-                params: { quantity },
-                withCredentials: true // Include credentials if needed
-            });
-
+            await api.put(`/cart/${id}`, { quantity }, { withCredentials: true });
+    
             // Update local cart state
             setLocalCart(prevCart =>
                 prevCart.map(item =>
@@ -45,7 +48,7 @@ const Cart = () => {
             toast.error('Error updating quantity');
         }
     };
-
+    
     return (
         <div className="cart">
             <h1>Cart</h1>

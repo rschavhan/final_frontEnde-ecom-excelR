@@ -1,39 +1,44 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { AppContext } from '../context/AppContext';
-import { useSearch } from '../context/SearchContext'; // Import SearchContext
-import ProductCard from '../components/ProductCard'; // Import the ProductCard component
+import { useSearch } from '../context/SearchContext'; 
+import ProductCard from '../components/ProductCard'; 
 import '../styles/Products.css';
 
 const Products = () => {
   const { addToCart } = useContext(AppContext);
-  const { searchQuery } = useSearch(); // Use SearchContext
-  const [selectedProduct, setSelectedProduct] = useState(null); // State to track the selected product
-
-  const initialProducts = [
-    { id: 1, name: 'Phone 128gb', price: 300, imgSrc: 'deal-phone1.jpg', category: 'phone', storage: '128GB', color: 'Black', brand: 'Brand A' },
-    { id: 2, name: 'Phone 2', price: 300, imgSrc: 'deal-phone2.jpg', category: 'phone', storage: '64GB', color: 'White', brand: 'Brand B' },
-    { id: 3, name: 'Shoe 1', price: 50, imgSrc: 'path/to/shoe1.jpg', category: 'footwear', size: '42', color: 'Red', brand: 'Brand A' },
-    { id: 4, name: 'Shoe 2', price: 70, imgSrc: 'path/to/shoe2.jpg', category: 'footwear', size: '44', color: 'Blue', brand: 'Brand B' },
-    { id: 5, name: 'Shirt', price: 30, imgSrc: 'path/to/shirt.jpg', category: 'clothes', size: 'M', color: 'Red', gender: 'Men', brand: 'Brand C' },
-    // Add more products as needed
-  ];
-
+  const { searchQuery } = useSearch();
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [category, setCategory] = useState('all');
-  const [priceRange, setPriceRange] = useState([0, 1000]); 
-  const [filteredProducts, setFilteredProducts] = useState(initialProducts);
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const [filters, setFilters] = useState({ storage: [], color: [], size: [], gender: [], brand: [] });
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // Fetch products from API when component mounts
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/products')
+      .then(response => {
+        setProducts(response.data);
+        setFilteredProducts(response.data); // Set initially filtered products
+      })
+      .catch(error => {
+        console.error('Failed to fetch products:', error);
+      });
+  }, []);
+
+  // Filter products based on searchQuery, category, and priceRange
   useEffect(() => {
     const query = searchQuery.toLowerCase();
     setFilteredProducts(
-      initialProducts.filter(product =>
+      products.filter(product =>
         (category === 'all' || product.category === category) &&
         product.name.toLowerCase().includes(query) &&
         product.price >= priceRange[0] &&
         product.price <= priceRange[1]
       )
     );
-  }, [searchQuery, category, priceRange]);
+  }, [searchQuery, category, priceRange, products]);
 
   const handleCategoryChange = (e) => {
     const selectedCategory = e.target.value;
@@ -76,11 +81,11 @@ const Products = () => {
   };
 
   const handleProductClick = (product) => {
-    setSelectedProduct(product); // Set the selected product when a product is clicked
+    setSelectedProduct(product);
   };
 
   const handleCloseProductCard = () => {
-    setSelectedProduct(null); // Clear the selected product when the ProductCard is closed
+    setSelectedProduct(null);
   };
 
   return (
@@ -232,7 +237,7 @@ const Products = () => {
       {selectedProduct && (
         <ProductCard
           product={selectedProduct}
-          onClose={handleCloseProductCard} // Pass the function to close the ProductCard
+          onClose={handleCloseProductCard}
         />
       )}
     </div>
