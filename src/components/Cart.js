@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import api from '../services/api';
 import { toast } from 'react-toastify';
@@ -9,25 +9,38 @@ const Cart = () => {
     const { userId, cart, removeFromCart } = useContext(AppContext);
     const [localCart, setLocalCart] = useState(cart);
     const [feedbackMessage, setFeedbackMessage] = useState('');
-    const navigate = useNavigate(); // Initialize useNavigate
+    const [totalAmount, setTotalAmount] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchCartItems(); // Fetch the latest cart items on component mount
+        fetchCartItems();
     }, []);
 
     useEffect(() => {
-        setLocalCart(cart); // Sync local state with context state
+        setLocalCart(cart);
+        updateTotalAmount();
     }, [cart]);
 
     const fetchCartItems = async () => {
         try {
             const response = await api.get(`/cart/${userId}`, { withCredentials: true });
-            setLocalCart(response.data);
             console.log('Fetched the cart from DB:', response.data);
+            setLocalCart(response.data);
         } catch (error) {
             console.error('Error fetching cart items:', error);
             toast.error('Error fetching cart items.');
         }
+    };
+
+    const updateTotalAmount = () => {
+        const total = localCart.reduce((acc, item) => {
+            if (item.product && typeof item.product.price === 'number' && typeof item.quantity === 'number') {
+                return acc + item.product.price * item.quantity;
+            }
+            return acc;
+        }, 0);
+        console.log("Total amount:", total);
+        setTotalAmount(total);
     };
 
     const handleQuantityChange = async (productId, quantity) => {
@@ -37,15 +50,13 @@ const Cart = () => {
                 return;
             }
 
-            // Update quantity in backend using product ID in the query parameters
             await api.put(`/cart/${productId}?quantity=${quantity}`, {}, { withCredentials: true });
 
-            // Update local cart state
-            setLocalCart(prevCart =>
-                prevCart.map(item =>
-                    item.product.id === productId ? { ...item, quantity } : item
-                )
+            const updatedCart = localCart.map(item =>
+                item.product.id === productId ? { ...item, quantity } : item
             );
+            setLocalCart(updatedCart);
+            updateTotalAmount();
             setFeedbackMessage('Quantity updated successfully!');
             toast.success('Quantity updated successfully!');
         } catch (error) {
@@ -55,9 +66,8 @@ const Cart = () => {
         }
     };
 
-    // Handle checkout button click
     const handleCheckout = () => {
-        navigate('/checkout'); // Redirect to the checkout page
+        navigate('/checkout', { state: { totalAmount } });
     };
 
     return (
@@ -86,6 +96,9 @@ const Cart = () => {
                             </div>
                         </div>
                     ))}
+                    <div className="cart-total">
+                        <h2>Total Amount: ₹ {totalAmount.toFixed(2)}</h2>
+                    </div>
                 </div>
             )}
             {localCart.length > 0 && (
