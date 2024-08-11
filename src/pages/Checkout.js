@@ -27,8 +27,9 @@ const Checkout = () => {
             const response = await api.get(`/addresses/user/${userId}`);
             if (response.data.length > 0) {
                 setAddresses(response.data);
+                setShowAddressForm(false); // Hide form if addresses exist
             } else {
-                setShowAddressForm(true);
+                setShowAddressForm(true); // Show form if no addresses exist
             }
         } catch (error) {
             console.error('Error fetching addresses:', error);
@@ -46,8 +47,24 @@ const Checkout = () => {
 
     const handleAddressSubmit = async (e) => {
         e.preventDefault();
+        // Create payload with userId at the top level
+        const payload = {
+            addressLine1: newAddress.addressLine1,
+            addressLine2: newAddress.addressLine2,
+            city: newAddress.city,
+            state: newAddress.state,
+            postalCode: newAddress.postalCode,
+            country: newAddress.country,
+            userId: userId, // Add userId at the top level
+        };
+        console.log('Payload:', payload); // Log payload to check its format
         try {
-            const response = await api.post('/addresses', { ...newAddress, user: { id: userId } });
+            const response = await api.post('/addresses', payload, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
             setAddresses([...addresses, response.data]);
             setNewAddress({
                 addressLine1: '',
@@ -64,6 +81,9 @@ const Checkout = () => {
             toast.error('Error adding address.');
         }
     };
+        
+    
+    
 
     const handleCheckout = () => {
         if (!selectedAddress) {
@@ -78,29 +98,7 @@ const Checkout = () => {
         <div className="checkout">
             <h1>Checkout</h1>
             <div className="checkout-content">
-                {addresses.length > 0 ? (
-                    <div>
-                        <h2>Select Address</h2>
-                        {addresses.map((address) => (
-                            <div key={address.id} className="address-item">
-                                <input
-                                    type="radio"
-                                    id={`address-${address.id}`}
-                                    name="selectedAddress"
-                                    value={address.id}
-                                    onChange={() => setSelectedAddress(address.id)}
-                                />
-                                <label htmlFor={`address-${address.id}`}>
-                                    <p>{address.addressLine1}</p>
-                                    <p>{address.addressLine2}</p>
-                                    <p>{address.city}, {address.state} {address.postalCode}</p>
-                                    <p>{address.country}</p>
-                                </label>
-                            </div>
-                        ))}
-                        <button onClick={() => setShowAddressForm(true)}>Add New Address</button>
-                    </div>
-                ) : (
+                {showAddressForm ? (
                     <div>
                         <h2>Add Address</h2>
                         <form onSubmit={handleAddressSubmit}>
@@ -166,9 +164,99 @@ const Checkout = () => {
                             <button type="submit">Save Address</button>
                         </form>
                     </div>
-                )}
-                {addresses.length > 0 && !showAddressForm && (
-                    <button onClick={handleCheckout}>Proceed to Checkout</button>
+                ) : (
+                    <div>
+                        {addresses.length > 0 ? (
+                            <div>
+                                <h2>Select Address</h2>
+                                {addresses.map((address) => (
+                                    <div key={address.id} className="address-item">
+                                        <input
+                                            type="radio"
+                                            id={`address-${address.id}`}
+                                            name="selectedAddress"
+                                            value={address.id}
+                                            onChange={() => setSelectedAddress(address.id)}
+                                        />
+                                        <label htmlFor={`address-${address.id}`}>
+                                            <p>{address.addressLine1}</p>
+                                            <p>{address.addressLine2}</p>
+                                            <p>{address.city}, {address.state} {address.postalCode}</p>
+                                            <p>{address.country}</p>
+                                        </label>
+                                    </div>
+                                ))}
+                                <button onClick={() => setShowAddressForm(true)}>Add New Address</button>
+                                <button onClick={handleCheckout}>Proceed to Checkout</button>
+                            </div>
+                        ) : (
+                            <div>
+                                <h2>Add Address</h2>
+                                <form onSubmit={handleAddressSubmit}>
+                                    <label>
+                                        Address Line 1:
+                                        <input
+                                            type="text"
+                                            name="addressLine1"
+                                            value={newAddress.addressLine1}
+                                            onChange={handleAddressChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        Address Line 2:
+                                        <input
+                                            type="text"
+                                            name="addressLine2"
+                                            value={newAddress.addressLine2}
+                                            onChange={handleAddressChange}
+                                        />
+                                    </label>
+                                    <label>
+                                        City:
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={newAddress.city}
+                                            onChange={handleAddressChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        State:
+                                        <input
+                                            type="text"
+                                            name="state"
+                                            value={newAddress.state}
+                                            onChange={handleAddressChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        Postal Code:
+                                        <input
+                                            type="text"
+                                            name="postalCode"
+                                            value={newAddress.postalCode}
+                                            onChange={handleAddressChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        Country:
+                                        <input
+                                            type="text"
+                                            name="country"
+                                            value={newAddress.country}
+                                            onChange={handleAddressChange}
+                                            required
+                                        />
+                                    </label>
+                                    <button type="submit">Save Address</button>
+                                </form>
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
         </div>
