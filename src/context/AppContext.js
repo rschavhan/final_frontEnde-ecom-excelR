@@ -13,6 +13,18 @@ export const AppProvider = ({ children }) => {
   const [logoutMessage, setLogoutMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [totalAmount, setTotalAmount] = useState(0); // Add state for total amount
+
+  const calculateTotalAmount = () => {
+      const amount = cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+      setTotalAmount(amount);
+  };
+
+  // Call calculateTotalAmount whenever the cart updates
+  useEffect(() => {
+      calculateTotalAmount();
+  }, [cart]);
+
   const fetchCart = useCallback(async () => {
     if (!userId) return;
 
@@ -131,7 +143,7 @@ export const AppProvider = ({ children }) => {
   };
 
   return (
-    <AppContext.Provider value={{ cart, addToCart, removeFromCart, userName,userId, userRole, login, isLoggingOut, logout, logoutMessage, searchQuery, updateSearchQuery, fetchCart }}>
+    <AppContext.Provider value={{totalAmount, cart, addToCart, removeFromCart, userName,userId, userRole, login, isLoggingOut, logout, logoutMessage, searchQuery, updateSearchQuery, fetchCart }}>
       {children}
     </AppContext.Provider>
   );

@@ -1,43 +1,49 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { AppContext } from '../context/AppContext';
 import api from '../services/api';
 import { toast } from 'react-toastify';
 import './Cart.css';
 
 const Cart = () => {
-    const { userId,cart, removeFromCart } = useContext(AppContext);
+    const { userId, cart, removeFromCart } = useContext(AppContext);
     const [localCart, setLocalCart] = useState(cart);
     const [feedbackMessage, setFeedbackMessage] = useState('');
-    
+    const navigate = useNavigate(); // Initialize useNavigate
 
+    useEffect(() => {
+        fetchCartItems(); // Fetch the latest cart items on component mount
+    }, []);
 
     useEffect(() => {
         setLocalCart(cart); // Sync local state with context state
     }, [cart]);
 
-    const handleQuantityChange = async (id, quantity) => {
+    const fetchCartItems = async () => {
         try {
-            // Ensure quantity is valid
+            const response = await api.get(`/cart/${userId}`, { withCredentials: true });
+            setLocalCart(response.data);
+            console.log('Fetched the cart from DB:', response.data);
+        } catch (error) {
+            console.error('Error fetching cart items:', error);
+            toast.error('Error fetching cart items.');
+        }
+    };
+
+    const handleQuantityChange = async (productId, quantity) => {
+        try {
             if (quantity < 1) {
                 setFeedbackMessage('Quantity must be at least 1.');
                 return;
             }
-    
-            // Fetch the current cart state (if necessary)
-            // You might not need this GET request unless you have a specific reason
-             const response = await api.get(`/cart/${userId}`, { withCredentials: true });
-             const cartItems = response.data;
-             console.log("Fetch The Cart from DB",cartItems);
-    
-            // Update quantity in backend
-            console.log("id:",id);
 
-            await api.put(`/cart/${id}`, { quantity }, { withCredentials: true });
-    
+            // Update quantity in backend using product ID in the query parameters
+            await api.put(`/cart/${productId}?quantity=${quantity}`, {}, { withCredentials: true });
+
             // Update local cart state
             setLocalCart(prevCart =>
                 prevCart.map(item =>
-                    item.id === id ? { ...item, quantity } : item
+                    item.product.id === productId ? { ...item, quantity } : item
                 )
             );
             setFeedbackMessage('Quantity updated successfully!');
@@ -45,37 +51,47 @@ const Cart = () => {
         } catch (error) {
             console.error('Error updating quantity:', error);
             setFeedbackMessage('Error updating quantity.');
-            toast.error('Error updating quantity');
+            toast.error('Error updating quantity.');
         }
     };
-    
+
+    // Handle checkout button click
+    const handleCheckout = () => {
+        navigate('/checkout'); // Redirect to the checkout page
+    };
+
     return (
         <div className="cart">
             <h1>Cart</h1>
-            {feedbackMessage && <p>{feedbackMessage}</p>}
+            {feedbackMessage && <p className="feedback-message">{feedbackMessage}</p>}
             {localCart.length === 0 ? (
                 <p>Your cart is empty</p>
             ) : (
                 <div className="cart-items">
                     {localCart.map(item => (
                         <div key={item.id} className="cart-item">
-                            <img src={item.imgSrc} alt={item.name} className="cart-item-image" />
+                            <img src={item.product.imgSrc} alt={item.product.name} className="cart-item-image" />
                             <div className="cart-item-details">
-                                <h3>{item.name}</h3>
-                                <p>₹ {item.price}</p>
-                                <label htmlFor={`quantity-${item.id}`}>Quantity:</label>
+                                <h3>{item.product.name}</h3>
+                                <p>₹ {item.product.price}</p>
+                                <label htmlFor={`quantity-${item.product.id}`}>Quantity:</label>
                                 <input
                                     type="number"
-                                    id={`quantity-${item.id}`}
+                                    id={`quantity-${item.product.id}`}
                                     value={item.quantity}
                                     min="1"
-                                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
+                                    onChange={(e) => handleQuantityChange(item.product.id, parseInt(e.target.value))}
                                 />
                                 <button onClick={() => removeFromCart(item.id)}>Remove</button>
                             </div>
                         </div>
                     ))}
                 </div>
+            )}
+            {localCart.length > 0 && (
+                <button className="checkout-button" onClick={handleCheckout}>
+                    Proceed to Checkout
+                </button>
             )}
         </div>
     );

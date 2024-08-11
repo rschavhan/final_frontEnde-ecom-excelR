@@ -8,14 +8,14 @@
 .latest-offers {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 800px;
     margin-bottom: 2rem;
     overflow: hidden;
 }
 
 .latest-offers img {
     width: 100%;
-    height: 800px;
+    height: 450px;
     object-fit: cover;
     transition: transform 0.5s ease-in-out;
 }
@@ -23,7 +23,7 @@
 .latest-offers .prev,
 .latest-offers .next {
     position: absolute;
-    top: 50%;
+    top: 30%;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
@@ -177,3 +177,30 @@
     outline: none;
   }
   
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .site-details {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px; /* Adjust spacing between the logo and text */
+  }
+  
+  .site-name {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .tagline {
+    position: absolute;
+    left:140px;
+    top:65px;
+    opacity: 70%;
+    font-weight: bolder;
+  
+    font-size: 18px;
+    color: #252525;
+    margin-top: 4px; /* Adjust spacing between the site name and the tagline */
+  }
