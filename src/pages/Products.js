@@ -196,7 +196,7 @@ const Products = () => {
               <input
                 type="range"
                 min="0"
-                max="80000"
+                max="980000"
                 value={priceRange[1]}
                 onChange={(e) => handlePriceChange({ target: { value: `${priceRange[0]},${e.target.value}` } })}
                 step="10"
