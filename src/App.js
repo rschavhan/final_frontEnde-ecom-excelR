@@ -12,6 +12,8 @@ import Products from './pages/Products';
 import Cart from './components/Cart';
 import AdminDashboard from './pages/AdminDashboard';
 import Checkout from './pages/Checkout';  // Import the Checkout component
+import Billing from './pages/Billing';
+import OrderSummary from './pages/OrderSummary';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,6 +33,8 @@ const AppContent = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
           <Route path="/checkout" element={<Checkout />} /> 
+          <Route path="/billing" element={<Billing />} />
+          <Route path="/order-summary" element={<OrderSummary />} />
         </Routes>
       </main>
       <Footer />

@@ -22,6 +22,7 @@ const Header = () => {
           {userId ? (
             <>
             <Link to="/cart">Cart ({cart.length})</Link>
+            <Link to="/order-summary">My Orders</Link>
               <span className='username'>Welcome, {userName}</span>
               <button onClick={logout}>Logout</button>
             </>
