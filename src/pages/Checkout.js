@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import api from '../services/api';
 import { toast } from 'react-toastify';
@@ -18,11 +18,16 @@ const Checkout = () => {
     });
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const [totalAmount, setTotalAmount] = useState(0);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         fetchAddresses();
-    }, [userId]);
+        if (location.state && location.state.totalAmount) {
+            setTotalAmount(location.state.totalAmount);
+        }
+    }, [userId, location.state]);
 
     const fetchAddresses = async () => {
         try {
@@ -50,12 +55,7 @@ const Checkout = () => {
     const handleAddressSubmit = async (e) => {
         e.preventDefault();
         const payload = {
-            addressLine1: newAddress.addressLine1,
-            addressLine2: newAddress.addressLine2,
-            city: newAddress.city,
-            state: newAddress.state,
-            postalCode: newAddress.postalCode,
-            country: newAddress.country,
+            ...newAddress,
             userId: userId,
         };
         try {
@@ -87,8 +87,8 @@ const Checkout = () => {
             toast.error('Please select an address for checkout.');
             return;
         }
-        // Navigate to billing page
-        navigate('/billing');
+        // Navigate to billing page with totalAmount
+        navigate('/billing', { state: { totalAmount } });
     };
 
     return (
@@ -99,8 +99,67 @@ const Checkout = () => {
                     <div>
                         <h2>Add Address</h2>
                         <form onSubmit={handleAddressSubmit}>
-                            {/* Form fields here */}
+                            <div>
+                                <label>Address Line 1</label>
+                                <input
+                                    type="text"
+                                    name="addressLine1"
+                                    value={newAddress.addressLine1}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Address Line 2</label>
+                                <input
+                                    type="text"
+                                    name="addressLine2"
+                                    value={newAddress.addressLine2}
+                                    onChange={handleAddressChange}
+                                />
+                            </div>
+                            <div>
+                                <label>City</label>
+                                <input
+                                    type="text"
+                                    name="city"
+                                    value={newAddress.city}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>State</label>
+                                <input
+                                    type="text"
+                                    name="state"
+                                    value={newAddress.state}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Postal Code</label>
+                                <input
+                                    type="text"
+                                    name="postalCode"
+                                    value={newAddress.postalCode}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Country</label>
+                                <input
+                                    type="text"
+                                    name="country"
+                                    value={newAddress.country}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                            </div>
                             <button type="submit">Save Address</button>
+                            <button type="button" onClick={() => setShowAddressForm(false)}>Cancel</button>
                         </form>
                     </div>
                 ) : (

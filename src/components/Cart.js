@@ -18,8 +18,11 @@ const Cart = () => {
 
     useEffect(() => {
         setLocalCart(cart);
-        updateTotalAmount();
     }, [cart]);
+
+    useEffect(() => {
+        calculateTotalAmount(localCart);
+    }, [localCart]); // Recalculate total amount whenever localCart changes
 
     const fetchCartItems = async () => {
         try {
@@ -32,8 +35,8 @@ const Cart = () => {
         }
     };
 
-    const updateTotalAmount = () => {
-        const total = localCart.reduce((acc, item) => {
+    const calculateTotalAmount = (cartItems = localCart) => {
+        const total = cartItems.reduce((acc, item) => {
             if (item.product && typeof item.product.price === 'number' && typeof item.quantity === 'number') {
                 return acc + item.product.price * item.quantity;
             }
@@ -56,7 +59,6 @@ const Cart = () => {
                 item.product.id === productId ? { ...item, quantity } : item
             );
             setLocalCart(updatedCart);
-            updateTotalAmount();
             setFeedbackMessage('Quantity updated successfully!');
             toast.success('Quantity updated successfully!');
         } catch (error) {

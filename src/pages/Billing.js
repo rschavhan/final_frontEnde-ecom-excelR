@@ -1,18 +1,22 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../context/AppContext';
-import api from '../services/api';
+import React, { useState, useContext } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import api from '../services/api';
 import '../styles/Billing.css';
-import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
 
 const Billing = () => {
+    const location = useLocation();
     const navigate = useNavigate();
-    const { userId, cart, selectedAddress } = useContext(AppContext);
+    const { userId } = useContext(AppContext); // Retrieve userId from context
     const [paymentInfo, setPaymentInfo] = useState({
         cardNumber: '',
         cardExpiry: '',
         cardCvc: '',
     });
+
+    // Retrieve the total amount from location state
+    const totalAmount = location.state?.totalAmount || 0;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -25,23 +29,20 @@ const Billing = () => {
     const handlePayment = async (e) => {
         e.preventDefault();
         try {
-            // Prepare order payload
             const orderPayload = {
-                user: { id: userId },          // User ID reference
-                totalAmount: calculateTotalAmount(), // Function to calculate total amount
-                orderDate: new Date().toISOString(), // Current date in ISO 8601 format
-                status: 'Pending',              // Order status
+                totalAmount, // Use the totalAmount directly
+                orderDate: new Date().toISOString(),
+                status: 'Pending',
             };
 
-            // Send request to create an order
-            const response = await api.post('/orders', orderPayload, {
+            // POST order to /orders/user/{userId}
+            const response = await api.post(`/orders/user/${userId}`, orderPayload, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
 
             toast.success('Payment successful!');
-            // Navigate to order summary with order data
             navigate('/order-summary', { state: { order: response.data } });
         } catch (error) {
             console.error('Payment error:', error);
@@ -49,14 +50,20 @@ const Billing = () => {
         }
     };
 
-    // Mock function to calculate total amount based on cart items
-    const calculateTotalAmount = () => {
-        return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const formatAmount = (amount) => {
+        if (isNaN(amount)) {
+            return '₹0';
+        }
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+        }).format(amount);
     };
 
     return (
         <div className="billing">
             <h1>Billing Information</h1>
+            <h2>Total Amount: {formatAmount(totalAmount)}</h2> {/* Display total amount here */}
             <form onSubmit={handlePayment}>
                 <label>
                     Card Number:
