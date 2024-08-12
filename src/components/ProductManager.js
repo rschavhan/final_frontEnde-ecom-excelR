@@ -50,7 +50,6 @@ const ProductManager = () => {
   const deleteProduct = async (id) => {
     try {
       await api.delete(`/products/${id}`);
-      console.log("id: ",id)
       setProducts(products.filter(product => product.id !== id));
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -61,6 +60,13 @@ const ProductManager = () => {
     setNewProduct({
       ...newProduct,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleCategoryChange = (e) => {
+    setNewProduct({
+      ...newProduct,
+      category: e.target.value,
     });
   };
 
@@ -97,13 +103,16 @@ const ProductManager = () => {
             value={newProduct.imgSrc}
             onChange={handleChange}
           />
-          <input
-            type="text"
+          <select
             name="category"
-            placeholder="Category"
             value={newProduct.category}
-            onChange={handleChange}
-          />
+            onChange={handleCategoryChange}
+          >
+            <option value="">Select Category</option>
+            <option value="Phone">Phone</option>
+            <option value="Footwear">Footwear</option>
+            <option value="Clothes">Clothes</option>
+          </select>
           <input
             type="text"
             name="storage"
@@ -136,7 +145,7 @@ const ProductManager = () => {
             <img src={product.imgSrc} alt={product.name} className="product-image" />
             <div className="product-details">
               <h3>{product.name}</h3>
-              <p>${product.price}</p>
+              <p>₹{product.price}</p>
               <button onClick={() => deleteProduct(product.id)}>Delete</button>
             </div>
           </li>

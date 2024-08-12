@@ -42,11 +42,24 @@ const Billing = () => {
                 },
             });
 
+            // Clear the cart after a successful payment
+            await clearCart();
+
             toast.success('Payment successful!');
             navigate('/order-summary', { state: { order: response.data } });
         } catch (error) {
             console.error('Payment error:', error);
             toast.error('Error processing payment.');
+        }
+    };
+
+    const clearCart = async () => {
+        try {
+            // Send a request to clear the cart
+            await api.delete(`/cart/user/${userId}`, { withCredentials: true });
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            toast.error('Error clearing cart.');
         }
     };
 

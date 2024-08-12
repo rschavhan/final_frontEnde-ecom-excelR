@@ -71,7 +71,6 @@ const Cart = () => {
     const handleCheckout = () => {
         navigate('/checkout', { state: { totalAmount } });
     };
-
     return (
         <div className="cart">
             <h1>Cart</h1>
@@ -80,24 +79,28 @@ const Cart = () => {
                 <p>Your cart is empty</p>
             ) : (
                 <div className="cart-items">
-                    {localCart.map(item => (
-                        <div key={item.id} className="cart-item">
-                            <img src={item.product.imgSrc} alt={item.product.name} className="cart-item-image" />
-                            <div className="cart-item-details">
-                                <h3>{item.product.name}</h3>
-                                <p>₹ {item.product.price}</p>
-                                <label htmlFor={`quantity-${item.product.id}`}>Quantity:</label>
-                                <input
-                                    type="number"
-                                    id={`quantity-${item.product.id}`}
-                                    value={item.quantity}
-                                    min="1"
-                                    onChange={(e) => handleQuantityChange(item.product.id, parseInt(e.target.value))}
-                                />
-                                <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                    {localCart.map((item) => {
+                        // Debugging: log item id to ensure uniqueness
+                        console.log(`Rendering item with id: ${item.id}`);
+                        return (
+                            <div key={item.id} className="cart-item">
+                                <img src={item.product.imgSrc} alt={item.product.name} className="cart-item-image" />
+                                <div className="cart-item-details">
+                                    <h3>{item.product.name}</h3>
+                                    <p>₹ {item.product.price}</p>
+                                    <label htmlFor={`quantity-${item.product.id}`}>Quantity:</label>
+                                    <input
+                                        type="number"
+                                        id={`quantity-${item.product.id}`}
+                                        value={item.quantity}
+                                        min="1"
+                                        onChange={(e) => handleQuantityChange(item.product.id, parseInt(e.target.value))}
+                                    />
+                                    <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     <div className="cart-total">
                         <h2>Total Amount: ₹ {totalAmount.toFixed(2)}</h2>
                     </div>
@@ -110,6 +113,7 @@ const Cart = () => {
             )}
         </div>
     );
+    
 };
 
 export default Cart;
