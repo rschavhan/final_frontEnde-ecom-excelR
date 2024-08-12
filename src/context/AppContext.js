@@ -73,6 +73,8 @@ export const AppProvider = ({ children }) => {
 
   // Function to add an item to the cart
   const addToCart = async (item) => {
+
+    console.log("item:",item);
     if (!userId) {
         toast.error('Please log in to add items to the cart.');
         return;
