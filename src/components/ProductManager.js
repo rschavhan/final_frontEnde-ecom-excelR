@@ -49,7 +49,8 @@ const ProductManager = () => {
 
   const deleteProduct = async (id) => {
     try {
-      await api.delete(`/products/delete/${id}`);
+      await api.delete(`/products/${id}`);
+      console.log("id: ",id)
       setProducts(products.filter(product => product.id !== id));
     } catch (error) {
       console.error('Error deleting product:', error);
